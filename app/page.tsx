@@ -1,101 +1,108 @@
+"use client";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import React, { useState, useEffect } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [products, setProducts] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
+  const [cartItems, setCartItems] = useState([]); // State for cart items
+  const [showCart, setShowCart] = useState(false); // Toggle cart view
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("https://fakestoreapi.com/products");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleAddToCart = (product) => {
+    setCartItems((prevItems) => [...prevItems, product]); // Add product to cartItems
+    setCartCount(cartCount + 1); // Increment cart count
+  };
+
+  const toggleCart = () => {
+    setShowCart(!showCart); // Toggle cart visibility
+  };
+
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + item.price, 0).toFixed(2);
+  };
+
+  return (
+    <div>
+      <header className="flex justify-between items-center p-4 bg-gray-100">
+        <h1>My Homepage</h1>
+        <div className="relative">
+          <button onClick={toggleCart} className="text-lg font-semibold flex">
+            <ShoppingCart />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-5 bg-red-500 text-white text-sm rounded-full px-2">
+                {cartCount}
+              </span>
+            )}
+          </button>
+          {showCart && (
+            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4">
+              <h2 className="font-bold text-xl mb-2">Cart Items</h2>
+              {cartItems.length > 0 ? (
+                <ul>
+                  {cartItems.map((item, index) => (
+                    <li key={index} className="border-b py-2 flex justify-between">
+                      <span>{item.title}</span>
+                      <span>${item.price.toFixed(2)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Your cart is empty.</p>
+              )}
+              {cartItems.length > 0 && (
+                <div className="font-bold text-lg mt-4">
+                  Total: ${calculateTotal()}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </header>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {Array.isArray(products) &&
+          products.map((product) => (
+            <div key={product.id} className="border border-black p-4 text-center">
+              <Image
+                src={product.image}
+                alt={product.title}
+                width={300}
+                height={500}
+                className="h-48 rounded"
+                onError={(e) => (e.target.src = "/fallback.png")} // Fallback image if loading fails
+              />
+              <h2 className="font-bold">{product.title}</h2>
+              <h2>${product.price?.toFixed(2)}</h2>
+              <div className="text-end">
+                <button
+                  onClick={() => handleAddToCart(product)} // Pass product details
+                  aria-label={`Add ${product.title} to cart`}
+                  className="border border-black bg-orange-500 w-14 h-10 rounded-lg text-white hover:bg-orange-700 transition"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
   );
 }

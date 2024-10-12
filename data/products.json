@@ -1,0 +1,24 @@
+[
+    {
+      "id": 1,
+      "name": "Classic White T-Shirt",
+      "price": 19.99,
+      "description": "A comfortable, 100% cotton white t-shirt.",
+      "image": "/images/white-shirt.webp"
+    },
+    {
+      "id": 2,
+      "name": "Blue Denim Jeans",
+      "price": 49.99,
+      "description": "Classic blue denim jeans with a modern fit.",
+      "image": "/images/jeans-blue.webp"
+    },
+    {
+      "id": 3,
+      "name": "Black Leather Wallet",
+      "price": 29.99,
+      "description": "A sleek, black leather wallet with multiple compartments.",
+      "image": "/images/leather-wallet.jpg"
+    }
+  ]
+  
