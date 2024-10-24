@@ -3,17 +3,18 @@ import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
+// Define the Product type
 type Product = {
   id: number;
-  name: string;
+  title: string;
   price: number;
+  image: string;
 };
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]); // Use the Product type for products
   const [cartCount, setCartCount] = useState(0);
-  const [cartItems, setCartItems] = useState([]); // State for cart items
-  const [showCart, setShowCart] = useState(false); // Toggle cart view
+  const [cartItems, setCartItems] = useState<Product[]>([]); // Explicitly type cartItems as Product[]
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,7 +23,7 @@ export default function Home() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
+        const data: Product[] = await response.json(); // Explicitly type the fetched data
         setProducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -37,10 +38,6 @@ export default function Home() {
     setCartCount(cartCount + 1); // Increment cart count
   };
 
-  const toggleCart = () => {
-    setShowCart(!showCart); // Toggle cart visibility
-  };
-
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + item.price, 0).toFixed(2);
   };
@@ -50,7 +47,7 @@ export default function Home() {
       <header className="flex justify-between items-center p-4 bg-gray-100">
         <h1>My Homepage</h1>
         <div className="relative">
-          <button onClick={toggleCart} className="text-lg font-semibold flex">
+          <button className="text-lg font-semibold flex">
             <ShoppingCart />
             {cartCount > 0 && (
               <span className="absolute top-0 right-5 bg-red-500 text-white text-sm rounded-full px-2">
@@ -58,28 +55,6 @@ export default function Home() {
               </span>
             )}
           </button>
-          {showCart && (
-            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4">
-              <h2 className="font-bold text-xl mb-2">Cart Items</h2>
-              {cartItems.length > 0 ? (
-                <ul>
-                  {cartItems.map((item, index) => (
-                    <li key={index} className="border-b py-2 flex justify-between">
-                      <span>{item.title}</span>
-                      <span>${item.price.toFixed(2)}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>Your cart is empty.</p>
-              )}
-              {cartItems.length > 0 && (
-                <div className="font-bold text-lg mt-4">
-                  Total: ${calculateTotal()}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </header>
 
@@ -93,14 +68,12 @@ export default function Home() {
                 width={300}
                 height={500}
                 className="h-48 rounded"
-                onError={(e) => (e.target.src = "/fallback.png")} // Fallback image if loading fails
               />
               <h2 className="font-bold">{product.title}</h2>
               <h2>${product.price?.toFixed(2)}</h2>
               <div className="text-end">
                 <button
                   onClick={() => handleAddToCart(product)} // Pass product details
-                  aria-label={`Add ${product.title} to cart`}
                   className="border border-black bg-orange-500 w-14 h-10 rounded-lg text-white hover:bg-orange-700 transition"
                 >
                   Add
@@ -109,6 +82,20 @@ export default function Home() {
             </div>
           ))}
       </div>
+
+      {cartItems.length > 0 && (
+        <div className="mt-4">
+          <h2>Cart Items</h2>
+          <ul>
+            {cartItems.map((item, index) => (
+              <li key={index}>
+                {item.title} - ${item.price.toFixed(2)}
+              </li>
+            ))}
+          </ul>
+          <div>Total: ${calculateTotal()}</div>
+        </div>
+      )}
     </div>
   );
 }
