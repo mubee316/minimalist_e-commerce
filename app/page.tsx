@@ -3,6 +3,12 @@ import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
+type Product = {
+  id: number;
+  name: string;
+  price: number;
+};
+
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [cartCount, setCartCount] = useState(0);
@@ -26,7 +32,7 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = (product: Product) => {
     setCartItems((prevItems) => [...prevItems, product]); // Add product to cartItems
     setCartCount(cartCount + 1); // Increment cart count
   };
